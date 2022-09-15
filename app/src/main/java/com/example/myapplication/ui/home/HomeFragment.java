@@ -1,5 +1,8 @@
 package com.example.myapplication.ui.home;
 
+import static android.database.sqlite.SQLiteDatabase.openOrCreateDatabase;
+
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,11 +12,11 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -22,7 +25,8 @@ import com.example.myapplication.databinding.FragmentHomeBinding;
 import com.example.myapplication.db.MyDbManager;
 import com.example.myapplication.models.ActivityModel;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -66,6 +70,7 @@ public class HomeFragment extends Fragment {
 
         //Обработка нажатия добавить - действия по записи
         btnAdd.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View view) {
 
@@ -90,28 +95,19 @@ public class HomeFragment extends Fragment {
 
                 minutes += hours * 60;
 
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+                LocalDateTime now = LocalDateTime.now();
+                System.out.println(dtf.format(now));
+
                 //Запись в БД
-                myDbManager.insertToDb(activity, minutes, "01.01.2001");
+                myDbManager.insertToDb(activity, minutes, dtf.format(now));
                 Toast.makeText(view.getContext(), "Активность записана", Toast.LENGTH_SHORT).show();
 
                 //Получение и вывод всех данных из БД
-                adapterActivitiesRowList = new ArrayAdapter<ActivityModel>(view.getContext(),
+                /*adapterActivitiesRowList = new ArrayAdapter<ActivityModel>(view.getContext(),
                         android.R.layout.simple_list_item_1,
                         myDbManager.getFromDb());
-                activityList.setAdapter(adapterActivitiesRowList);
-
-                /*activityCombo.setText("");
-                hoursInput.setText("");
-                minutesInput.setText("");*/
-
-                List<TextView> objectList = new ArrayList<>();
-                objectList.add(activityCombo);
-                objectList.add(hoursInput);
-                objectList.add(minutesInput);
-
-                for (TextView tw : objectList) {
-                    tw.setText("");
-                }
+                activityList.setAdapter(adapterActivitiesRowList); */
             }
         });
     }

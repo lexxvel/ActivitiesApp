@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.dashboard;
 
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -22,6 +24,8 @@ import com.example.myapplication.databinding.FragmentDashboardBinding;
 import com.example.myapplication.db.MyDbManager;
 import com.example.myapplication.models.ActivityModel;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class DashboardFragment extends Fragment {
@@ -60,9 +64,12 @@ public class DashboardFragment extends Fragment {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     void storeDataInArrays(View view) {
         myDbManager = new MyDbManager(view.getContext());
-        Cursor cursor = myDbManager.readAddData();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDateTime now = LocalDateTime.now();
+        Cursor cursor = myDbManager.readAddData(dtf.format(now));
         while (cursor.moveToNext()) {
             activity.add(cursor.getString(1));
             date.add(cursor.getString(2));

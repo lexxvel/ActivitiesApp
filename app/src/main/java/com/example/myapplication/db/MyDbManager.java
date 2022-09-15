@@ -29,7 +29,27 @@ public class MyDbManager {
         cv.put(MyConstants.ACTIVITY, activity);
         cv.put(MyConstants.DATE, date);
         cv.put(MyConstants.TIME, time);
-        db.insert(MyConstants.TABLE_NAME, null, cv);
+
+        Cursor cursor = db.query(MyConstants.TABLE_NAME, null, "activity = '" + activity + "' AND date = '" + date + "'", null, null, null, null);
+        List<ActivityModel> listOfRows = new ArrayList<>();
+        int timerow = 0;
+        int count = cursor.getCount();
+        while (cursor.moveToNext()) {
+            String activityrow = cursor.getString(1);
+            timerow = cursor.getInt(2);
+            String daterow = cursor.getString(3);
+             listOfRows = new ArrayList<>();
+            listOfRows.add(new ActivityModel(activityrow, daterow, timerow));
+        }
+        if (cursor.getCount() > 0) {
+            time += timerow;
+            cv.put(MyConstants.TIME, time);
+            db.update(MyConstants.TABLE_NAME, cv, "activity=? AND date=?", new String[] {activity, date});
+        } else {
+            cv.put(MyConstants.TIME, time);
+            db.insert(MyConstants.TABLE_NAME, null, cv);
+        }
+        cursor.close();
     }
 
     public List<ActivityModel> getFromDb() {
@@ -46,9 +66,9 @@ public class MyDbManager {
         return list;
     }
 
-    public Cursor readAddData() {
+    public Cursor readAddData(String date) {
         db = myDbHelper.getWritableDatabase();
-        Cursor cursor = db.query(MyConstants.TABLE_NAME, null, null, null, null, null, null);
+        Cursor cursor = db.query(MyConstants.TABLE_NAME, null, "date like '" + date + "'", null, null, null, null);
         return cursor;
     }
 
