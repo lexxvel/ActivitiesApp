@@ -12,6 +12,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,6 +28,7 @@ import com.example.myapplication.models.ActivityModel;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -108,6 +110,15 @@ public class HomeFragment extends Fragment {
                         android.R.layout.simple_list_item_1,
                         myDbManager.getFromDb());
                 activityList.setAdapter(adapterActivitiesRowList); */
+
+                List<TextView> objectList = new ArrayList<>();
+                objectList.add(activityCombo);
+                objectList.add(hoursInput);
+                objectList.add(minutesInput);
+
+                for (TextView tw : objectList) {
+                    tw.setText("");
+                }
             }
         });
     }
