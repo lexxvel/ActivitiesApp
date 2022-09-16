@@ -50,27 +50,25 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/show_dialogPickDate"
         android:layout_width="130dp"
         android:layout_height="57dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="60dp"
-        android:text="Применить фильтр"
+        android:text="Сменить дату"
         android:textSize="10sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <EditText
-        android:id="@+id/editTextDate"
-        android:layout_width="154dp"
-        android:layout_height="41dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="68dp"
-        android:ems="10"
-        android:inputType="date"
+    <TextView
+        android:id="@+id/pickedDate"
+        android:layout_width="175dp"
+        android:layout_height="52dp"
+        android:layout_marginBottom="60dp"
+        android:text=""
+        android:textSize="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintEnd_toStartOf="@+id/show_dialogPickDate"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
