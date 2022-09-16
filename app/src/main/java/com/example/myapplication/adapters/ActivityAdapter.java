@@ -16,14 +16,15 @@ import java.util.ArrayList;
 public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.MyViewHolder> {
 
     Context context;
-    ArrayList activity, time, date;
+    ArrayList activity, time, date, percents;
     ActivityAdapter activityAdapter;
 
-    public ActivityAdapter(Context context, ArrayList activity, ArrayList time, ArrayList date) {
+    public ActivityAdapter(Context context, ArrayList activity, ArrayList time, ArrayList date, ArrayList percents) {
         this.context = context;
         this.activity = activity;
         this.date = date;
         this.time = time;
+        this.percents = percents;
     }
 
     @NonNull
@@ -39,6 +40,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.MyView
         holder.tv_activity.setText(String.valueOf(activity.get(position)));
         holder.tv_date.setText(String.valueOf(date.get(position)));
         holder.tv_time.setText(String.valueOf(time.get(position)));
+        holder.tv_percents.setText(String.valueOf(percents.get(position)));
     }
 
     @Override
@@ -48,13 +50,14 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.MyView
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tv_activity, tv_date, tv_time;
+        TextView tv_activity, tv_date, tv_time, tv_percents;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             tv_activity = itemView.findViewById(R.id.tv_activity);
             tv_date = itemView.findViewById(R.id.tv_date);
             tv_time = itemView.findViewById(R.id.tv_time);
+            tv_percents = itemView.findViewById(R.id.tv_percents);
         }
     }
 }

@@ -7,9 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
-import android.widget.TableLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -24,8 +22,8 @@ import com.example.myapplication.R;
 import com.example.myapplication.adapters.ActivityAdapter;
 import com.example.myapplication.databinding.FragmentDashboardBinding;
 import com.example.myapplication.db.MyDbManager;
-import com.example.myapplication.models.ActivityModel;
 
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -37,12 +35,13 @@ public class DashboardFragment extends Fragment implements DatePickerDialog.OnDa
     RecyclerView recyclerView;
     ActivityAdapter activityAdapter;
     MyDbManager myDbManager;
-    ArrayList<String> activity, date, time;
+    ArrayList<String> activity, date, time, percents;
     private TextView pickedDateTw;
     View view;
     DateTimeFormatter dtf;
     LocalDateTime now;
     String pickedDate = "";
+    TextView totalMunutes;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -66,6 +65,7 @@ public class DashboardFragment extends Fragment implements DatePickerDialog.OnDa
         activity = new ArrayList<>();
         time = new ArrayList<>();
         date = new ArrayList<>();
+        percents = new ArrayList<>();
 
         dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         now = LocalDateTime.now();
@@ -73,7 +73,7 @@ public class DashboardFragment extends Fragment implements DatePickerDialog.OnDa
 
         storeDataInArrays(view, null);
 
-        activityAdapter = new ActivityAdapter(view.getContext(), activity, time, date);
+        activityAdapter = new ActivityAdapter(view.getContext(), activity, time, date, percents);
         recyclerView.setAdapter(activityAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 
@@ -87,21 +87,41 @@ public class DashboardFragment extends Fragment implements DatePickerDialog.OnDa
 
     }
 
+    /**
+     * Получение данных за выбранную/текущую дату. Заполняет массивы ArrayList<String> activity, date, time
+     * @param view View
+     * @param pickedDate Выбранная дата, если имеется. Если её нет передавать "null"
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     void storeDataInArrays(View view, String pickedDate) {
         myDbManager = new MyDbManager(view.getContext());
         now = LocalDateTime.now();
         Cursor cursor;
+        Cursor timeCursor;
         if (pickedDate == null) {
             cursor = myDbManager.readAddData(dtf.format(now));
+            timeCursor = myDbManager.readAddTime(dtf.format(now));
         } else {
             cursor = myDbManager.readAddData(pickedDate);
+            timeCursor = myDbManager.readAddTime(pickedDate);
+        }
+        int totalTime = 0;
+        while (timeCursor.moveToNext()) {
+            System.out.println(timeCursor.getString(0));
+            totalTime += Integer.parseInt(timeCursor.getString(0));
         }
         while (cursor.moveToNext()) {
             activity.add(cursor.getString(1));
-            date.add(cursor.getString(2));
-            time.add(cursor.getString(3));
+            String cursorTime = cursor.getString(2);
+            time.add(cursorTime);
+            date.add(cursor.getString(3));
+            DecimalFormat df = new DecimalFormat("###.##");
+            String persentCounted = String.valueOf(df.format((double) (Integer.parseInt(cursorTime) * 100) / totalTime)).toString();
+            percents.add(persentCounted);
         }
+
+        totalMunutes = view.findViewById(R.id.tv_totalMunutes);
+        totalMunutes.setText(String.valueOf(totalTime));
     }
 
     /**
@@ -178,15 +198,20 @@ public class DashboardFragment extends Fragment implements DatePickerDialog.OnDa
                 pickedDate = dayOfMonth + "." + month + "." + year;
             }
         }
+        //Запись выбранной даты в TextView
         pickedDateTw.setText(pickedDate);
+
+        //Очистка записей грида перед применением фильтра
         activity.clear();
         date.clear();
         time.clear();
+
+        //Запрос в БД и применение фильтра
         storeDataInArrays(view, pickedDate);
-        activityAdapter = new ActivityAdapter(view.getContext(), activity, time, date);
+        activityAdapter = new ActivityAdapter(view.getContext(), activity, time, date, percents);
         recyclerView.setAdapter(activityAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 
-        //Запрос в БД и применение фильтра
+
     }
 }

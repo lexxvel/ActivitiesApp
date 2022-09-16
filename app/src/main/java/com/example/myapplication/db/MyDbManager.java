@@ -68,7 +68,13 @@ public class MyDbManager {
 
     public Cursor readAddData(String date) {
         db = myDbHelper.getWritableDatabase();
-        Cursor cursor = db.query(MyConstants.TABLE_NAME, null, "date like '" + date + "'", null, null, null, null);
+        Cursor cursor = db.query(MyConstants.TABLE_NAME, null, "date like '" + date + "'", null, null, null, "time DESC");
+        return cursor;
+    }
+
+    public Cursor readAddTime(String date) {
+        db = myDbHelper.getWritableDatabase();
+        Cursor cursor = db.query(MyConstants.TABLE_NAME, new String[]{"time"}, "date like '" + date + "'", null, null, null, "time DESC");
         return cursor;
     }
 
