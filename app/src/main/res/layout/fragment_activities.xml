@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.activities.ActivitiesFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycleViewActivities"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/btn_addActivity"
+        app:layout_constraintTop_toBottomOf="@id/guidelineHorisontal10"
+        android:scrollbars="vertical"
+        android:scrollbarSize="6sp"/>
+
+    <Button
+        android:id="@+id/btn_addActivity"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="3dp"
+        android:layout_marginBottom="5dp"
+        android:text="Добавить"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/editTextActivityName" />
+
+    <EditText
+        android:id="@+id/editTextActivityName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="3dp"
+        android:ems="10"
+        android:hint="Введите активность..."
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/guidelineVertical66"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="5dp"
+        app:layout_constraintVertical_bias="0.041" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineHorisontal0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.0" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineHorisontal10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.0" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineHorisontal86"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="682dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineVertical66"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.66" />
+</androidx.constraintlayout.widget.ConstraintLayout>

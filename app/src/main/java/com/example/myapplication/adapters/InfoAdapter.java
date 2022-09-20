@@ -13,13 +13,13 @@ import com.example.myapplication.R;
 
 import java.util.ArrayList;
 
-public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.MyViewHolder> {
+public class InfoAdapter extends RecyclerView.Adapter<InfoAdapter.MyViewHolder> {
 
     Context context;
     ArrayList activity, time, date, percents;
-    ActivityAdapter activityAdapter;
+    InfoAdapter activityAdapter;
 
-    public ActivityAdapter(Context context, ArrayList activity, ArrayList time, ArrayList date, ArrayList percents) {
+    public InfoAdapter(Context context, ArrayList activity, ArrayList time, ArrayList date, ArrayList percents) {
         this.context = context;
         this.activity = activity;
         this.date = date;
@@ -29,14 +29,14 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.MyView
 
     @NonNull
     @Override
-    public ActivityAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public InfoAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.raw_example, parent, false);
         return new MyViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ActivityAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull InfoAdapter.MyViewHolder holder, int position) {
         holder.tv_activity.setText(String.valueOf(activity.get(position)));
         holder.tv_date.setText(String.valueOf(date.get(position)));
         holder.tv_time.setText(String.valueOf(time.get(position)));

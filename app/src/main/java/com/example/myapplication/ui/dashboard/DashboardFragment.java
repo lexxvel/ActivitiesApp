@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
-import com.example.myapplication.adapters.ActivityAdapter;
+import com.example.myapplication.adapters.InfoAdapter;
 import com.example.myapplication.databinding.FragmentDashboardBinding;
 import com.example.myapplication.db.MyDbManager;
 
@@ -33,7 +33,7 @@ public class DashboardFragment extends Fragment implements DatePickerDialog.OnDa
 
     private FragmentDashboardBinding binding;
     RecyclerView recyclerView;
-    ActivityAdapter activityAdapter;
+    InfoAdapter activityAdapter;
     MyDbManager myDbManager;
     ArrayList<String> activity, date, time, percents;
     private TextView pickedDateTw;
@@ -71,9 +71,9 @@ public class DashboardFragment extends Fragment implements DatePickerDialog.OnDa
         now = LocalDateTime.now();
         pickedDateTw.setText(dtf.format(now));
 
-        storeDataInArrays(view, null);
+        storeInfoDataInArrays(view, null);
 
-        activityAdapter = new ActivityAdapter(view.getContext(), activity, time, date, percents);
+        activityAdapter = new InfoAdapter(view.getContext(), activity, time, date, percents);
         recyclerView.setAdapter(activityAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 
@@ -93,7 +93,7 @@ public class DashboardFragment extends Fragment implements DatePickerDialog.OnDa
      * @param pickedDate Выбранная дата, если имеется. Если её нет передавать "null"
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    void storeDataInArrays(View view, String pickedDate) {
+    void storeInfoDataInArrays(View view, String pickedDate) {
         myDbManager = new MyDbManager(view.getContext());
         now = LocalDateTime.now();
         Cursor cursor;
@@ -207,8 +207,8 @@ public class DashboardFragment extends Fragment implements DatePickerDialog.OnDa
         time.clear();
 
         //Запрос в БД и применение фильтра
-        storeDataInArrays(view, pickedDate);
-        activityAdapter = new ActivityAdapter(view.getContext(), activity, time, date, percents);
+        storeInfoDataInArrays(view, pickedDate);
+        activityAdapter = new InfoAdapter(view.getContext(), activity, time, date, percents);
         recyclerView.setAdapter(activityAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 

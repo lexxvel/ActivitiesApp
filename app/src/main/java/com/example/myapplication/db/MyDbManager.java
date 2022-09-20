@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.widget.Toast;
 
 import com.example.myapplication.models.ActivityModel;
 
@@ -30,7 +31,7 @@ public class MyDbManager {
         cv.put(MyConstants.DATE, date);
         cv.put(MyConstants.TIME, time);
 
-        Cursor cursor = db.query(MyConstants.TABLE_NAME, null, "activity = '" + activity + "' AND date = '" + date + "'", null, null, null, null);
+        Cursor cursor = db.query(MyConstants.INFO_TABLE_NAME, null, "activity = '" + activity + "' AND date = '" + date + "'", null, null, null, null);
         List<ActivityModel> listOfRows = new ArrayList<>();
         int timerow = 0;
         int count = cursor.getCount();
@@ -44,10 +45,10 @@ public class MyDbManager {
         if (cursor.getCount() > 0) {
             time += timerow;
             cv.put(MyConstants.TIME, time);
-            db.update(MyConstants.TABLE_NAME, cv, "activity=? AND date=?", new String[] {activity, date});
+            db.update(MyConstants.INFO_TABLE_NAME, cv, "activity=? AND date=?", new String[] {activity, date});
         } else {
             cv.put(MyConstants.TIME, time);
-            db.insert(MyConstants.TABLE_NAME, null, cv);
+            db.insert(MyConstants.INFO_TABLE_NAME, null, cv);
         }
         cursor.close();
     }
@@ -55,7 +56,7 @@ public class MyDbManager {
     public List<ActivityModel> getFromDb() {
 
         List<ActivityModel> list = new ArrayList<>();
-        Cursor cursor = db.query(MyConstants.TABLE_NAME, null, null, null, null, null, null);
+        Cursor cursor = db.query(MyConstants.INFO_TABLE_NAME, null, null, null, null, null, null);
         while (cursor.moveToNext()) {
             String activity1 = cursor.getString(1);
             int time1 = cursor.getInt(2);
@@ -68,17 +69,37 @@ public class MyDbManager {
 
     public Cursor readAddData(String date) {
         db = myDbHelper.getWritableDatabase();
-        Cursor cursor = db.query(MyConstants.TABLE_NAME, null, "date like '" + date + "'", null, null, null, "time DESC");
+        Cursor cursor = db.query(MyConstants.INFO_TABLE_NAME, null, "date like '" + date + "'", null, null, null, "time DESC");
         return cursor;
     }
 
     public Cursor readAddTime(String date) {
         db = myDbHelper.getWritableDatabase();
-        Cursor cursor = db.query(MyConstants.TABLE_NAME, new String[]{"time"}, "date like '" + date + "'", null, null, null, "time DESC");
+        Cursor cursor = db.query(MyConstants.INFO_TABLE_NAME, new String[]{"time"}, "date like '" + date + "'", null, null, null, "time DESC");
         return cursor;
     }
 
     public void closeDb() {
         myDbHelper.close();
+    }
+
+    public Cursor readAllActivitiesFromActivities() {
+        db = myDbHelper.getWritableDatabase();
+        return db.query(MyConstants.ACTIVITIES_TABLE_NAME, new String[]{MyConstants.ACTIVITY}, null, null, null, null, null);
+    }
+
+    public void insertActivityToDb(String activity, Context context) {
+        ContentValues cv = new ContentValues();
+        cv.put(MyConstants.ACTIVITY, activity);
+
+        Cursor cursor = db.query(MyConstants.INFO_TABLE_NAME, null, "activity = '" + activity + "'", null, null, null, null);
+        List<ActivityModel> listOfRows = new ArrayList<>();
+        int count = cursor.getCount();
+        if (cursor.getCount() > 0) {
+            Toast.makeText(context, "Активность уже существует", Toast.LENGTH_SHORT).show();
+        } else {
+            db.insert(MyConstants.ACTIVITIES_TABLE_NAME, null, cv);
+        }
+        cursor.close();
     }
 }
