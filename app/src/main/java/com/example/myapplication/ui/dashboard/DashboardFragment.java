@@ -29,7 +29,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class DashboardFragment extends Fragment implements DatePickerDialog.OnDateSetListener {
+public class DashboardFragment extends Fragment implements DatePickerDialog.OnDateSetListener, InfoAdapter.IInfoRecycler {
 
     private FragmentDashboardBinding binding;
     RecyclerView recyclerView;
@@ -41,7 +41,7 @@ public class DashboardFragment extends Fragment implements DatePickerDialog.OnDa
     DateTimeFormatter dtf;
     LocalDateTime now;
     String pickedDate = "";
-    TextView totalMunutes;
+    TextView tv_totalMunutesAndHours;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -71,9 +71,10 @@ public class DashboardFragment extends Fragment implements DatePickerDialog.OnDa
         now = LocalDateTime.now();
         pickedDateTw.setText(dtf.format(now));
 
-        storeInfoDataInArrays(view, null);
+        pickedDate = "";
+        storeInfoDataInArrays(null);
 
-        activityAdapter = new InfoAdapter(view.getContext(), activity, time, date, percents);
+        activityAdapter = new InfoAdapter(view.getContext(), activity, time, date, percents, pickedDate, this);
         recyclerView.setAdapter(activityAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 
@@ -85,43 +86,6 @@ public class DashboardFragment extends Fragment implements DatePickerDialog.OnDa
             }
         });
 
-    }
-
-    /**
-     * Получение данных за выбранную/текущую дату. Заполняет массивы ArrayList<String> activity, date, time
-     * @param view View
-     * @param pickedDate Выбранная дата, если имеется. Если её нет передавать "null"
-     */
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    void storeInfoDataInArrays(View view, String pickedDate) {
-        myDbManager = new MyDbManager(view.getContext());
-        now = LocalDateTime.now();
-        Cursor cursor;
-        Cursor timeCursor;
-        if (pickedDate == null) {
-            cursor = myDbManager.readAddData(dtf.format(now));
-            timeCursor = myDbManager.readAddTime(dtf.format(now));
-        } else {
-            cursor = myDbManager.readAddData(pickedDate);
-            timeCursor = myDbManager.readAddTime(pickedDate);
-        }
-        int totalTime = 0;
-        while (timeCursor.moveToNext()) {
-            System.out.println(timeCursor.getString(0));
-            totalTime += Integer.parseInt(timeCursor.getString(0));
-        }
-        while (cursor.moveToNext()) {
-            activity.add(cursor.getString(1));
-            String cursorTime = cursor.getString(2);
-            time.add(cursorTime);
-            date.add(cursor.getString(3));
-            DecimalFormat df = new DecimalFormat("###.##");
-            String persentCounted = String.valueOf(df.format((double) (Integer.parseInt(cursorTime) * 100) / totalTime)).toString();
-            percents.add(persentCounted);
-        }
-
-        totalMunutes = view.findViewById(R.id.tv_totalMunutes);
-        totalMunutes.setText(String.valueOf(totalTime));
     }
 
     /**
@@ -172,8 +136,6 @@ public class DashboardFragment extends Fragment implements DatePickerDialog.OnDa
         }
     }
 
-
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -201,17 +163,58 @@ public class DashboardFragment extends Fragment implements DatePickerDialog.OnDa
         //Запись выбранной даты в TextView
         pickedDateTw.setText(pickedDate);
 
+        //Запрос в БД и применение фильтра
+        storeInfoDataInArrays(pickedDate);
+    }
+
+
+    /**
+     * Получение данных за выбранную/текущую дату. Заполняет массивы ArrayList<String> activity, date, time
+     * @param pickedDate Выбранная дата, если имеется. Если её нет передавать "null"
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    public void storeInfoDataInArrays(String pickedDate) {
         //Очистка записей грида перед применением фильтра
         activity.clear();
         date.clear();
         time.clear();
+        percents.clear();
 
-        //Запрос в БД и применение фильтра
-        storeInfoDataInArrays(view, pickedDate);
-        activityAdapter = new InfoAdapter(view.getContext(), activity, time, date, percents);
+        myDbManager = new MyDbManager(view.getContext());
+        now = LocalDateTime.now();
+        Cursor cursor;
+        Cursor timeCursor;
+        if (pickedDate == null || pickedDate.equals("")) {
+            cursor = myDbManager.readAddData(dtf.format(now));
+            timeCursor = myDbManager.readAddTime(dtf.format(now));
+        } else {
+            cursor = myDbManager.readAddData(pickedDate);
+            timeCursor = myDbManager.readAddTime(pickedDate);
+        }
+        int totalTime = 0;
+        while (timeCursor.moveToNext()) {
+            System.out.println(timeCursor.getString(0));
+            totalTime += Integer.parseInt(timeCursor.getString(0));
+        }
+        while (cursor.moveToNext()) {
+            activity.add(cursor.getString(1));
+            String cursorTime = cursor.getString(2);
+            time.add(cursorTime);
+            date.add(cursor.getString(3));
+            DecimalFormat df = new DecimalFormat("###.##");
+            String persentCounted = String.valueOf(df.format((double) (Integer.parseInt(cursorTime) * 100) / totalTime)).toString();
+            percents.add(persentCounted);
+        }
+
+        int totalTimeMinutes = totalTime % 60;
+        int totalTimeHours = (totalTime - totalTimeMinutes) / 60;
+
+        tv_totalMunutesAndHours = view.findViewById(R.id.tv_totalMunutesAndHours);
+        tv_totalMunutesAndHours.setText(String.valueOf(totalTimeHours) + "ч " + String.valueOf(totalTimeMinutes) + "мин.");
+
+        activityAdapter = new InfoAdapter(view.getContext(), activity, time, date, percents, pickedDate, this);
         recyclerView.setAdapter(activityAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-
-
     }
 }

@@ -47,9 +47,6 @@ public class ActivitiesFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        /**
-         * TODO: ВЫВОД АКТИВНОСТЕЙ
-         */
 
         activities = new ArrayList<>();
         myDbManager = new MyDbManager(view.getContext());
@@ -57,12 +54,8 @@ public class ActivitiesFragment extends Fragment {
         buttonAdd = view.findViewById(R.id.btn_addActivity);
         newActivityName = view.findViewById(R.id.editTextActivityName);
 
-
         //Отображение активностей
         storeActivitiesDataInArrays();
-        activitiesAdapter = new ActivitiesAdapter(view.getContext(), activities);
-        recyclerViewActivities.setAdapter(activitiesAdapter);
-        recyclerViewActivities.setLayoutManager(new LinearLayoutManager(view.getContext()));
 
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,7 +65,7 @@ public class ActivitiesFragment extends Fragment {
                 if (activity.equals("")) {
                     Toast.makeText(getContext(), "Не введена активность", Toast.LENGTH_SHORT).show();
                 } else {
-                    myDbManager.insertActivityToDb(activity, getContext());
+                    myDbManager.insertActivityToDb(activity, view.getContext());
                     newActivityName.setText("");
                     activities.clear();
                     storeActivitiesDataInArrays();
@@ -89,6 +82,9 @@ public class ActivitiesFragment extends Fragment {
             System.out.println(cursor.getString(0));
             activities.add(cursor.getString(0));
         }
+        activitiesAdapter = new ActivitiesAdapter(getContext(), activities);
+        recyclerViewActivities.setAdapter(activitiesAdapter);
+        recyclerViewActivities.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
     @Override

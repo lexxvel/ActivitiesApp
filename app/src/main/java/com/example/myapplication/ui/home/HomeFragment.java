@@ -8,10 +8,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,15 +26,13 @@ import com.example.myapplication.db.MyDbManager;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
 
-    EditText hoursInput;
-    EditText minutesInput;
+    EditText hoursInput, minutesInput;
     private MyDbManager myDbManager;
     AlertDialog dialog;
     TextView act;
@@ -138,19 +134,18 @@ public class HomeFragment extends Fragment {
 
     public void selectActivity(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        /*final CharSequence[] charSequence = new CharSequence[]{
-                "Работа", "Учёба", "Социальные сети", "Семья", "Хобби", "Уборка"};*/
+        EditText editText = new EditText(getContext());
 
         storeActivitiesDataInArray();
-        final CharSequence[] charSequence = activities.toArray(new CharSequence[0]);
+        final CharSequence[] charSequenceActivitiesRaw = activities.toArray(new CharSequence[0]);
 
         final String[] selectedElement = {""};
 
-        builder.setSingleChoiceItems(charSequence, selectedActivityInt == -200 ? -1 : selectedActivityInt, new DialogInterface.OnClickListener() {
+        builder.setSingleChoiceItems(charSequenceActivitiesRaw, selectedActivityInt == -200 ? -1 : selectedActivityInt, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        System.out.println(charSequence[i].toString());
-                        selectedElement[0] = charSequence[i].toString();
+                        System.out.println(charSequenceActivitiesRaw[i].toString());
+                        selectedElement[0] = charSequenceActivitiesRaw[i].toString();
                         selectedActivityInt = i;
                     }
                 })
@@ -171,7 +166,7 @@ public class HomeFragment extends Fragment {
                                 Toast.makeText(view.getContext(), "Выберите активность!", Toast.LENGTH_SHORT).show();
                                 selectActivity(view);
                             } else {
-                                selectedElement[0] = charSequence[selectedActivityInt].toString();
+                                selectedElement[0] = charSequenceActivitiesRaw[selectedActivityInt].toString();
                                 selectedActivity = selectedElement[0];
                                 act.setText(selectedActivity);
                             }
@@ -186,7 +181,8 @@ public class HomeFragment extends Fragment {
         dialog.show();
     }
 
-    private void storeActivitiesDataInArray() {
+    public void storeActivitiesDataInArray() {
+        activities.clear();
         Cursor cursor;
         cursor = myDbManager.readAllActivitiesFromActivities();
         while (cursor.moveToNext()) {

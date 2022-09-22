@@ -92,7 +92,7 @@ public class MyDbManager {
         ContentValues cv = new ContentValues();
         cv.put(MyConstants.ACTIVITY, activity);
 
-        Cursor cursor = db.query(MyConstants.INFO_TABLE_NAME, null, "activity = '" + activity + "'", null, null, null, null);
+        Cursor cursor = db.query(MyConstants.ACTIVITIES_TABLE_NAME, null, "activity like '" + activity + "'", null, null, null, null);
         List<ActivityModel> listOfRows = new ArrayList<>();
         int count = cursor.getCount();
         if (cursor.getCount() > 0) {
@@ -101,5 +101,23 @@ public class MyDbManager {
             db.insert(MyConstants.ACTIVITIES_TABLE_NAME, null, cv);
         }
         cursor.close();
+    }
+
+    public void deleteActivityInfo(String activity, String date, Context context) {
+        db = myDbHelper.getWritableDatabase();
+        int a = db.delete(MyConstants.INFO_TABLE_NAME, MyConstants.ACTIVITY + "=? and " + MyConstants.DATE + "=?", new String[]{activity, date});
+        System.out.println(a);
+    }
+
+    public int updateActivityInfo(String activity, String date, String time, Context context) {
+        db = myDbHelper.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(MyConstants.TIME, Integer.valueOf(time));
+        return db.update(MyConstants.INFO_TABLE_NAME, cv, MyConstants.ACTIVITY + "=? and " + MyConstants.DATE + "=?", new String[]{activity, date});
+    }
+
+    public int deleteActivity(String activity, Context context) {
+        db = myDbHelper.getWritableDatabase();
+        return db.delete(MyConstants.ACTIVITIES_TABLE_NAME, MyConstants.ACTIVITY + "=?", new String[]{activity});
     }
 }

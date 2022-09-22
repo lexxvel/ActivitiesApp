@@ -10,6 +10,8 @@ import org.junit.runner.RunWith;
 
 import static org.junit.Assert.*;
 
+import com.example.myapplication.db.MyConstants;
+
 /**
  * Instrumented test, which will execute on an Android device.
  *
@@ -21,6 +23,8 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.example.myapplication", appContext.getPackageName());
+        assertEquals("ru.lexxvel.timesheet", appContext.getPackageName());
+        assertEquals(new String[]{MyConstants.DB_NAME, MyConstants.DB_NAME+ "-journal"}, appContext.databaseList());
+        System.out.println("4243");
     }
 }
